@@ -505,6 +505,7 @@ void kruskal(Vertex* v){
     //1. store all edges in a list
     EdgeList arr[20];
     int n = 0;
+    //store edges
     Vertex* temp = v;
     while(temp){
         Edge* e = temp->edgeList;
@@ -515,11 +516,11 @@ void kruskal(Vertex* v){
         temp = temp->next;
     }
 
-    //2. sort weight of edges using bubble sort
-    for(int i=0; i<n; i++){
+    //2. sort edges using bubble sort
+    for(int i=0; i<n-1; i++){
         for(int j=0; j<n-i-1; j++){
             if(arr[j].w > arr[j+1].w){
-                swap(arr[j], arr[j-1]);
+                swap(arr[j], arr[j+1]);
             }
         }
     }
@@ -530,6 +531,7 @@ void kruskal(Vertex* v){
         parent[i] = i;
         cout<<"Kruskal MST: \n";
 
+        //MST logic
         for(int i=0; i<n; i++){
             //convert char to int for array indexing
             int u = arr[i].u;
@@ -559,7 +561,7 @@ void Prim(Vertex* v) {
     cout << "Prim MST:\n";
 
     for (int i = 0; i < 10; i++) {
-        int minWeight = INT_MAX;
+        int minWeight = 9999;
         Vertex* from = NULL;
         Vertex* to = NULL;
 
@@ -584,6 +586,61 @@ void Prim(Vertex* v) {
 
         cout << from->data << " - " << to->data << " (" << minWeight << ")\n";
         visited[to->data] = true;
+    }
+}
+
+//Dijkstra Shortest path
+void Dijkstra(Vertex* v, int src){
+
+    int INF = 9999;
+    int dist[20];
+    bool visited[20];
+
+    //Initialization
+    for(int i=0; i<20; i++){
+        dist[i] = INF;
+        visited[i] = false;
+    }
+    dist[src] = 0;  //distance of src vertex is "0"
+
+    for(int i=0; i<20; i++){
+        int minVertex = -1;
+        int minDist = INF;
+        
+        // find min Distance
+        for(int j=0; j<20; j++){
+            if(!visited[j] && dist[j] < minDist){
+                minDist = dist[j];
+                minVertex = j;
+            }
+        }
+        if(minVertex == -1)  break;
+
+        visited[minVertex] = true;
+
+        //find this vertex in the list
+        Vertex* temp = v;
+        while(temp != NULL && temp->data != minVertex){
+            temp = temp->next;
+        }
+
+        if(temp == NULL)   continue;
+
+        Edge* e = temp->edgeList;
+        while(e != NULL){
+            int neighbor = e->v->data;
+            if(!visited[neighbor] && dist[minVertex] + e->weight < dist[neighbor]){
+                dist[neighbor] = dist[minVertex] + e->weight;
+            }
+            e = e->next;
+        }
+    }
+    //print
+    cout<< "Shortest Distance: \n";
+    for(int i=0; i<20; i++){
+        if(dist[i] != INF){
+            cout<< "From " << src << " To " << i << " = " << dist[i] <<endl;
+        }
     }
 }
 
@@ -616,6 +673,7 @@ int main(){
         cout << "15. Search Vertex\n";
         cout << "16. Kruskal\n";
         cout << "17. Prim\n";
+        cout << "18. Dijkstra Shortest Path\n";
         cout << "0. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
@@ -713,6 +771,12 @@ int main(){
 
             case 17:
                 Prim(v);
+                break;
+
+            case 18:
+                cout<< "Enter Source: ";
+                cin>> src;
+                Dijkstra(v, src);
                 break;
         }
 
